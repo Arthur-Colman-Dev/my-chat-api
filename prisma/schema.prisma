@@ -1,0 +1,49 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id          String    @id @default(cuid())
+  displayName String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  messages    Message[]
+}
+
+model Message {
+  id             String    @id @default(cuid())
+  authorId       String
+  author         User      @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  content        String
+
+  // Threading (see *1 bellow)
+  parentId       String?   @db.VarChar(191)
+  parent         Message?  @relation("MessageToMessage", fields: [parentId], references: [id])
+  children       Message[] @relation("MessageToMessage")
+  threadId       String
+  depth          Int       @default(0)
+
+  // lifecycle
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  editedAt       DateTime?
+  deletedAt      DateTime?
+  version        Int       @default(1)
+
+  // extras
+  metadata       Json?
+  idempotencyKey String?   @unique
+
+  @@index([threadId, createdAt])
+  @@index([parentId])
+  @@index([authorId, createdAt])
+  @@index([deletedAt])
+}
+
+// *1: Each message can reference a parent message. All those linked messages are going to be part of the same thread. The thread is going to be used to easily manage the related messages.

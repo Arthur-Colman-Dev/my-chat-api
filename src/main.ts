@@ -16,6 +16,7 @@ async function bootstrap() {
     bufferLogs: true,
     logger: ['log', 'error', 'warn', 'debug'],
   });
+  app.enableShutdownHooks();
 
   // Security layer
   app.use(helmet()); // Express middeware to set various HTTP headers for app security

@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import appConfig from '@config/app.config';
 import { HealthModule } from '@modules/health/health.module';
+import { PrismaModule } from '@common/db/prisma.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { HealthModule } from '@modules/health/health.module';
       load: [appConfig],
       envFilePath: ['.env'],
     }),
+    PrismaModule,
     HealthModule,
   ],
   controllers: [AppController],
