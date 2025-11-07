@@ -44,6 +44,7 @@ model Message {
   @@index([parentId])
   @@index([authorId, createdAt])
   @@index([deletedAt])
+  @@unique([createdAt, id], name: "createdAt_id")
 }
 
 // *1: Each message can reference a parent message. All those linked messages are going to be part of the same thread. The thread is going to be used to easily manage the related messages.
